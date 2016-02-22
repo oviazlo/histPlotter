@@ -20,7 +20,7 @@ void SamplePool::AddElement(string systematicsTag, unsigned int DCID,
             m_internalMap[systematicsTag][DCID].push_back(sample);
         }
     else{
-        /// do nothing, because this sample is already in the map
+        /// do nothing, because this sample is already in the map 
     }
             
 }
@@ -36,17 +36,15 @@ map<unsigned int, vector<SH::Sample*> > SamplePool::GetMap(string systematicsTag
 
 WprimeMergedSample::WprimeMergedSample(){
     
-    vector<unsigned int> tmpVec;
-    tmpVec.push_back(301100);
-    tmpVec.push_back(301101);
-    tmpVec.push_back(301102);
-    tmpVec.push_back(301103);
-    tmpVec.push_back(301104);
-    tmpVec.push_back(301105);
-    m_globalSampleDefiner["test1"] = tmpVec;
-    vector<unsigned int> tmpVec2;
-    tmpVec2.push_back(301249);
-    m_globalSampleDefiner["test2"] = tmpVec2;
+    vector<unsigned int> tmpVec(wmunuDSID.begin(),wmunuDSID.begin()+2);
+    m_globalSampleDefiner["wmunu_inclusive"] = tmpVec;
+    vector<unsigned int> tmpVec2(wmunuDSID.begin()+2,wmunuDSID.end());
+    m_globalSampleDefiner["wmunu_massbinned"] = tmpVec2;
+    vector<unsigned int> tmpVec3(wmunuDSID.begin(),wmunuDSID.begin()+1);
+    m_globalSampleDefiner["wmunuplus_inclusive"] = tmpVec3;
+    vector<unsigned int> tmpVec4(wmunuDSID.begin()+1,wmunuDSID.begin()+2);
+    m_globalSampleDefiner["wmunuminus_inclusive"] = tmpVec4;
+    
     
     m_globalSampleDefiner["diboson"] = dibosonDSID;
     m_globalSampleDefiner["top"] = topDSID;
@@ -172,6 +170,13 @@ TH1D* WprimeMergedSample::GetMergedHist(string globalSampleTag, string histName,
                 return NULL;
             }
             TH1D* tmpHist = (TH1D*)sample->readHist(histName.c_str());
+            if (tmpHist==NULL){
+              cout << "[WARNING]\tSample *" << sample->name() << "* don't contain histogram *"
+              << histName << "*\n";
+              continue;
+            }
+//             cout << "[DEBUG]\thistName = " << histName << "; currentDSID = " 
+//             << currentDSID << endl;
             if (outHist==NULL)
                 outHist = (TH1D*)tmpHist->Clone((histName+"_summed").c_str());
             else
@@ -180,4 +185,21 @@ TH1D* WprimeMergedSample::GetMergedHist(string globalSampleTag, string histName,
     }
     
     return outHist;
+}
+
+
+std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) {
+    std::stringstream ss(s);
+    std::string item;
+    while (std::getline(ss, item, delim)) {
+        elems.push_back(item);
+    }
+    return elems;
+}
+
+
+std::vector<std::string> GetWords(const std::string &s, char delim) {
+    std::vector<std::string> elems;
+    split(s, delim, elems);
+    return elems;
 }

@@ -41,8 +41,9 @@ class WprimeMergedSample
 {
 
 public:
-    /// TODO implement properly hardcoded DSID - globalSampleTag relations
+    /// TODO what about implementation for data?
     WprimeMergedSample();
+    /// TODO get rid of *double free or corruption (!prev)* execution error
     ~WprimeMergedSample();
 
     void AddSampleHandler(SH::SampleHandler sh, string shDirName);
@@ -78,6 +79,12 @@ private:
     /// this is needed to distribute the algorithm to the workers
 //     ClassDef(WprimeMergedSample, 1);
 };
+
+std::vector<std::string> &split(const std::string &s, char delim, 
+                                std::vector<std::string> &elems);
+
+
+std::vector<std::string> GetWords(const std::string &s, char delim=' ');
 
 unsigned int dibosonDSIDArr[] = {361063,361064,361065,361066,361067,361068,
     361081,361082,361083,361084,361086,361087};
