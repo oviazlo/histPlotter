@@ -86,9 +86,13 @@ std::vector<std::string> &split(const std::string &s, char delim,
 
 std::vector<std::string> GetWords(const std::string &s, char delim=' ');
 
+/// FIXME WARNING no mc15b samples for: 361081, 361082, 361083, 361087
+/// there are only mc15a...
+// unsigned int dibosonDSIDArr[] = {361063,361064,361065,361066,361067,361068,
+//     361081,361082,361083,361084,361086,361087};
 unsigned int dibosonDSIDArr[] = {361063,361064,361065,361066,361067,361068,
-    361081,361082,361083,361084,361086,361087};
-
+    361084,361086};    
+    
 unsigned int topDSIDArr[] = {410000,410011,410012,410013,410014};
 
 unsigned int ztautauDSIDArr[] = {361108,301040,301041,301042,301043,301044,

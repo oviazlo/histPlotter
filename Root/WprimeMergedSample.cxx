@@ -57,17 +57,15 @@ WprimeMergedSample::WprimeMergedSample(){
     m_globalSampleDefiner["wprime"] = wprimeDSID;
 
     vector<unsigned int> zDSID;
-    zDSID.reserve(ztautauDSID.size()+zmumuDSID.size()+zeeDSID.size());
+    zDSID.reserve(ztautauDSID.size()+zmumuDSID.size());
     zDSID.insert(zDSID.end(),ztautauDSID.begin(),ztautauDSID.end());
     zDSID.insert(zDSID.end(),zmumuDSID.begin(),zmumuDSID.end());
-    zDSID.insert(zDSID.end(),zeeDSID.begin(),zeeDSID.end());
     m_globalSampleDefiner["z"] = zDSID;
     
     vector<unsigned int> wDSID;
-    wDSID.reserve(wtaunuDSID.size()+wmunuDSID.size()+wenuDSID.size());
+    wDSID.reserve(wtaunuDSID.size()+wmunuDSID.size());
     wDSID.insert(wDSID.end(),wtaunuDSID.begin(),wtaunuDSID.end());
     wDSID.insert(wDSID.end(),wmunuDSID.begin(),wmunuDSID.end());
-    wDSID.insert(wDSID.end(),wenuDSID.begin(),wenuDSID.end());
     m_globalSampleDefiner["w"] = wDSID;
     
 };
