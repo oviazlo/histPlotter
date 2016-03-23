@@ -49,6 +49,7 @@ public:
     void AddSampleHandler(SH::SampleHandler sh, string shDirName);
     TH1D* GetMergedHist(string globalSampleTag, string histName,
                         string systematicsTag = "");
+    TH1D* GetMergedDataHist(string histName);
     /// based on m_globalSampleDefiner map
     /// TODO write print-function of all supported GlobalSampleTags
     vector<string> GetAllSupportedGlobalSampleTags();

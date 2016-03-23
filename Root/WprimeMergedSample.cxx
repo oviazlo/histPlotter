@@ -68,6 +68,18 @@ WprimeMergedSample::WprimeMergedSample(){
     wDSID.insert(wDSID.end(),wmunuDSID.begin(),wmunuDSID.end());
     m_globalSampleDefiner["w"] = wDSID;
     
+    /// FIXME for testing
+    vector<unsigned int> testing;
+    testing.push_back(301102);
+    
+//     testing.push_back(361101);
+//     testing.push_back(361102);
+//     testing.push_back(361104);
+//     testing.push_back(361105);
+    m_globalSampleDefiner["testing"] = testing;
+    
+    vector<unsigned int> emptyVec;
+    m_globalSampleDefiner["data"] = emptyVec;
 };
 
 vector<string> WprimeMergedSample::GetAllSupportedGlobalSampleTags(){
@@ -142,7 +154,7 @@ TH1D* WprimeMergedSample::GetMergedHist(string globalSampleTag, string histName,
         << globalSampleTag << " is not supported!!!" << endl;
     
     /// verification if we have all needed DSID (according to m_globalSampleDefiner)
-    if (currentMap.size()<=m_globalSampleDefiner[globalSampleTag].size()){
+    if (currentMap.size()<m_globalSampleDefiner[globalSampleTag].size()){
         cout << "[ERROR]\tWprimeMergedSample::GetMergedHist - number of read samples"
         " are not as expected!!!" << endl;
         cout << "globalSampleTag: " << globalSampleTag << endl;
@@ -173,6 +185,16 @@ TH1D* WprimeMergedSample::GetMergedHist(string globalSampleTag, string histName,
               << histName << "*\n";
               continue;
             }
+//             /// FIXME hardcoded scale of W-sample
+//             if (currentDSID==361101){
+//               cout << "do scaling for 361101" << endl;
+//               tmpHist->Scale(19997800./928281.);
+//             }
+//             if (currentDSID==361104){
+//               cout << "do scaling for 361104" << endl;
+//               tmpHist->Scale(19970400./1083408.); 
+//             }
+            
 //             cout << "[DEBUG]\thistName = " << histName << "; currentDSID = " 
 //             << currentDSID << endl;
             if (outHist==NULL)
@@ -184,6 +206,48 @@ TH1D* WprimeMergedSample::GetMergedHist(string globalSampleTag, string histName,
     
     return outHist;
 }
+
+
+
+
+
+TH1D* WprimeMergedSample::GetMergedDataHist(string histName){
+    map<unsigned int, vector<SH::Sample*> > currentMap =
+    m_samplePool.GetMap("");
+
+    TH1D* outHist = NULL;
+    for (int i=270000; i<290000; i++){
+        vector<SH::Sample*> sampleVec = currentMap[i];
+        if (sampleVec.size()==0)
+          continue;
+        
+        for (int k=0; k<sampleVec.size(); k++){
+            SH::Sample* sample = sampleVec[k];
+            if (sample==NULL){
+                cout << "[ERROR]\tWprimeMergedSample::GetMergedHist - sample for DSID: "
+                << i << " is not found!!! Terminate!!!" << endl;
+                return NULL;
+            }
+            TH1D* tmpHist = (TH1D*)sample->readHist(histName.c_str());
+            if (tmpHist==NULL){
+              cout << "[WARNING]\tSample *" << sample->name() << "* don't contain histogram *"
+              << histName << "*\n";
+              continue;
+            }
+            if (outHist==NULL)
+                outHist = (TH1D*)tmpHist->Clone((histName+"_summed").c_str());
+            else
+                outHist->Add(tmpHist);  
+        }
+    }
+    
+    return outHist;
+}
+
+
+
+
+
 
 
 std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) {
