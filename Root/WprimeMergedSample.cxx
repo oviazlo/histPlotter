@@ -113,7 +113,7 @@ vector<unsigned int> wprimeDSID ={301533,301534,301242,301243,301244,301245,
     
     /// FIXME for testing
     vector<unsigned int> testing;
-    testing.push_back(301102);
+    testing.push_back(301106);
     
 //     testing.push_back(361101);
 //     testing.push_back(361102);
