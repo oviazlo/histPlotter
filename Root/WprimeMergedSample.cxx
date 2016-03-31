@@ -120,6 +120,7 @@ vector<unsigned int> wprimeDSID ={301533,301534,301242,301243,301244,301245,
 //     testing.push_back(361104);
 //     testing.push_back(361105);
     m_globalSampleDefiner["testing"] = testing;
+    m_globalSampleDefiner["testing2"] = testing;
     
     vector<unsigned int> emptyVec;
     m_globalSampleDefiner["data"] = emptyVec;
