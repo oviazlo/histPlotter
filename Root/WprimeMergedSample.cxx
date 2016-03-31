@@ -36,6 +36,49 @@ map<unsigned int, vector<SH::Sample*> > SamplePool::GetMap(string systematicsTag
 
 WprimeMergedSample::WprimeMergedSample(){
     
+/// FIXME WARNING no mc15b samples for: 361081, 361082, 361083, 361087
+/// there are only mc15a...
+
+  
+vector<unsigned int> dibosonDSID = {361063,361064,361065,361066,361067,361068,
+    361081,361082,361083,361084,361086,361087};
+
+vector<unsigned int> topDSID = {410000,410011,410012,410013,410014};
+
+vector<unsigned int> ztautauDSID = {361108,301040,301041,301042,301043,301044,
+    301045,301046,301047,301048,301049,301050,301051,301052,301053,301054,
+    301055,301056,301057,301058};
+
+vector<unsigned int> zmumuDSID = {361107,301020,301021,301022,301023,301024,
+    301025,301026,301027,301028,301029,301030,301031,301032,301033,301034,
+    301035,301036,301037,301038};  
+    
+vector<unsigned int> zeeDSID = {361106,301000,301001,301002,301003,301004,
+    301005,301006,301007,301008,301009,301010,301011,301012,301013,301014,
+    301014,301015,301016,301017,301018};
+
+vector<unsigned int> wtaunuDSID = {361102,361105,301140,301141,301142,301143,
+    301144,301145,301146,301147,301148,301149,301150,301151,301152,301153,
+    301154,301155,301156,301157,301158,301160,301161,301162,301163,301164,
+    301165,301166,301167,301168,301169,301170,301171,301172,301173,301174,
+    301175,301176,301177,301178};
+    
+vector<unsigned int> wmunuDSID = {361101,361104,301100,301101,301102,301103,
+    301104,301105,301106,301107,301108,301109,301110,301111,301112,301113,
+    301114,301115,301116,301117,301118,301120,301121,301122,301123,301124,
+    301125,301126,301127,301128,301129,301130,301131,301132,301133,301134,
+    301135,301136,301137,301138};
+    
+vector<unsigned int> wenuDSID = {361100,361103,301060,301061,301062,301063,
+    301064,301065,301066,301067,301068,301069,301070,301071,301072,301073,
+    301074,301075,301076,301077,301078,301080,301081,301082,301083,301084,
+    301085,301086,301087,301088,301089,301090,301091,301092,301093,301094,
+    301095,301096,301097,301098};
+    
+vector<unsigned int> wprimeDSID ={301533,301534,301242,301243,301244,301245,
+    301246,301247,301248,301249};
+
+  
     vector<unsigned int> tmpVec(wmunuDSID.begin(),wmunuDSID.begin()+2);
     m_globalSampleDefiner["wmunu_inclusive"] = tmpVec;
     vector<unsigned int> tmpVec2(wmunuDSID.begin()+2,wmunuDSID.end());
@@ -80,7 +123,7 @@ WprimeMergedSample::WprimeMergedSample(){
     
     vector<unsigned int> emptyVec;
     m_globalSampleDefiner["data"] = emptyVec;
-};
+}
 
 vector<string> WprimeMergedSample::GetAllSupportedGlobalSampleTags(){
     vector<string> outVec;
@@ -117,7 +160,7 @@ void WprimeMergedSample::SortInputSH(){
 
 void WprimeMergedSample::PrintSamplePool(){
     cout << "[INFO]\tPrint m_samplePool content!!!" << endl;
-    for (int i=0; i<m_samplePool.m_includedSystematicsTags.size(); i++){
+    for (unsigned int i=0; i<m_samplePool.m_includedSystematicsTags.size(); i++){
         string tmpSysTag = m_samplePool.m_includedSystematicsTags[i];
         map<unsigned int, vector<SH::Sample*> > tmpMap = 
         m_samplePool.GetMap(tmpSysTag);
@@ -126,7 +169,7 @@ void WprimeMergedSample::PrintSamplePool(){
         for(map<unsigned int, vector<SH::Sample*> >::iterator it = 
             tmpMap.begin(); it!=tmpMap.end(); ++it){
             vector<SH::Sample*> sampleVec = (*it).second;
-            for (int i=0; i<sampleVec.size(); i++){
+            for (unsigned int i=0; i<sampleVec.size(); i++){
                 cout << (*it).first << ":\t" << sampleVec[i]->name() << endl;    
             }
         }
@@ -166,13 +209,13 @@ TH1D* WprimeMergedSample::GetMergedHist(string globalSampleTag, string histName,
     }
     
     TH1D* outHist = NULL;
-    for (int i=0; i<m_globalSampleDefiner[globalSampleTag].size(); i++){
+    for (unsigned int i=0; i<m_globalSampleDefiner[globalSampleTag].size(); i++){
         unsigned int currentDSID = m_globalSampleDefiner[globalSampleTag][i];
         vector<SH::Sample*> sampleVec = currentMap[currentDSID];
         if (sampleVec.size()==0)
             cout << "[ERROR]\tWprimeMergedSample::GetMergedHist - sample for DSID: "
                 << currentDSID << " is not found!!! Terminate!!!" << endl;
-        for (int k=0; k<sampleVec.size(); k++){
+        for (unsigned int k=0; k<sampleVec.size(); k++){
             SH::Sample* sample = sampleVec[k];
             if (sample==NULL){
                 cout << "[ERROR]\tWprimeMergedSample::GetMergedHist - sample for DSID: "
@@ -216,12 +259,12 @@ TH1D* WprimeMergedSample::GetMergedDataHist(string histName){
     m_samplePool.GetMap("");
 
     TH1D* outHist = NULL;
-    for (int i=270000; i<290000; i++){
+    for (unsigned int i=270000; i<290000; i++){
         vector<SH::Sample*> sampleVec = currentMap[i];
         if (sampleVec.size()==0)
           continue;
         
-        for (int k=0; k<sampleVec.size(); k++){
+        for (unsigned int k=0; k<sampleVec.size(); k++){
             SH::Sample* sample = sampleVec[k];
             if (sample==NULL){
                 cout << "[ERROR]\tWprimeMergedSample::GetMergedHist - sample for DSID: "
