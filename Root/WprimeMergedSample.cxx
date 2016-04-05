@@ -1,3 +1,5 @@
+/* Copyright 2016 Oleksandr Viazlo */
+
 #include <histPlotter/WprimeMergedSample.h>
 // #include <math.h> /// WARNING DEBUG
 // #include <cmath.h> /// WARNING DEBUG

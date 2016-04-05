@@ -1,3 +1,11 @@
+/* Copyright 2016 Oleksandr Viazlo */
+
+///*****************************************************************************
+///
+/// Class which take care of merging histogram from many samples.
+///
+///*****************************************************************************
+
 #ifndef WprimeMergedSample_H
 #define WprimeMergedSample_H
 
@@ -41,9 +49,7 @@ class WprimeMergedSample
 {
 
 public:
-    /// TODO what about implementation for data?
     WprimeMergedSample();
-    /// TODO get rid of *double free or corruption (!prev)* execution error
     ~WprimeMergedSample();
 
     void AddSampleHandler(SH::SampleHandler sh, string shDirName);
