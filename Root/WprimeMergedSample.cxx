@@ -1,4 +1,6 @@
 #include <histPlotter/WprimeMergedSample.h>
+// #include <math.h> /// WARNING DEBUG
+// #include <cmath.h> /// WARNING DEBUG
 
 /// this is needed to distribute the algorithm to the workers
 // ClassImp(WprimeMergedSample)
@@ -41,7 +43,7 @@ WprimeMergedSample::WprimeMergedSample(){
 
   
 vector<unsigned int> dibosonDSID = {361063,361064,361065,361066,361067,361068,
-    361081,361082,361083,361084,361086,361087};
+    361088,361091,361092,361093,361094,361096};
 
 vector<unsigned int> topDSID = {410000,410011,410012,410013,410014};
 
@@ -99,17 +101,23 @@ vector<unsigned int> wprimeDSID ={301533,301534,301242,301243,301244,301245,
     m_globalSampleDefiner["wenu"] = wenuDSID;
     m_globalSampleDefiner["wprime"] = wprimeDSID;
 
-    vector<unsigned int> zDSID;
-    zDSID.reserve(ztautauDSID.size()+zmumuDSID.size());
-    zDSID.insert(zDSID.end(),ztautauDSID.begin(),ztautauDSID.end());
-    zDSID.insert(zDSID.end(),zmumuDSID.begin(),zmumuDSID.end());
-    m_globalSampleDefiner["z"] = zDSID;
+    /// WARNING no taus (it's OK, they don't contribute at all)
+//     vector<unsigned int> zDSID;
+//     zDSID.reserve(zmumuDSID.size());
+//     zDSID.reserve(ztautauDSID.size()+zmumuDSID.size());
+//     zDSID.insert(zDSID.end(),ztautauDSID.begin(),ztautauDSID.end());
+//     zDSID.insert(zDSID.end(),zmumuDSID.begin(),zmumuDSID.end());
+//     m_globalSampleDefiner["z"] = zDSID;
+    m_globalSampleDefiner["z"] = zmumuDSID;
     
-    vector<unsigned int> wDSID;
-    wDSID.reserve(wtaunuDSID.size()+wmunuDSID.size());
-    wDSID.insert(wDSID.end(),wtaunuDSID.begin(),wtaunuDSID.end());
-    wDSID.insert(wDSID.end(),wmunuDSID.begin(),wmunuDSID.end());
-    m_globalSampleDefiner["w"] = wDSID;
+    /// WARNING no taus (it's OK, they don't contribute at all)
+//     vector<unsigned int> wDSID;
+//     wDSID.reserve(wmunuDSID.size());
+//     wDSID.reserve(wtaunuDSID.size()+wmunuDSID.size());
+//     wDSID.insert(wDSID.end(),wtaunuDSID.begin(),wtaunuDSID.end());
+//     wDSID.insert(wDSID.end(),wmunuDSID.begin(),wmunuDSID.end());
+//     m_globalSampleDefiner["w"] = wDSID;
+    m_globalSampleDefiner["w"] = wmunuDSID;
     
     /// FIXME for testing
     vector<unsigned int> testing;
@@ -241,6 +249,20 @@ TH1D* WprimeMergedSample::GetMergedHist(string globalSampleTag, string histName,
             
 //             cout << "[DEBUG]\thistName = " << histName << "; currentDSID = " 
 //             << currentDSID << endl;
+
+//             /// WARNING DEBUG
+//             cout << endl << sample->name() << endl;
+            bool haveNanValue = false;
+            for (unsigned int iBin=1; iBin<=tmpHist->GetNbinsX(); iBin++){
+              if (std::isfinite(tmpHist->GetBinContent(iBin))==0){
+                haveNanValue = true;
+                break;
+              }
+//               cout << tmpHist->GetBinContent(iBin) << "\t" << std::isfinite(tmpHist->GetBinContent(iBin)) << endl;
+            }
+            if (haveNanValue==true)
+              cout << "[WARNING]\t Found NaN in " << sample->name() << endl;
+            
             if (outHist==NULL)
                 outHist = (TH1D*)tmpHist->Clone((histName+"_summed").c_str());
             else
