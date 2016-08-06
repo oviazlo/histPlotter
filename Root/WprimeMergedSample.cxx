@@ -45,7 +45,8 @@ WprimeMergedSample::WprimeMergedSample(){
 
   
 vector<unsigned int> dibosonDSID = {361063,361064,361065,361066,361067,361068,
-    361088,361091,361092,361093,361094,361096};
+    361088,
+    361091,361092,361093,361094,361096};
 
 vector<unsigned int> topDSID = {410000,410011,410012,410013,410014};
 
@@ -134,6 +135,20 @@ vector<unsigned int> wprimeDSID ={301533,301534,301242,301243,301244,301245,
     
     vector<unsigned int> emptyVec;
     m_globalSampleDefiner["data"] = emptyVec;
+    m_globalSampleDefiner["multijet"] = emptyVec;
+    
+  /// get hostname of the running machine
+  /// check if it is cern or lunarc machines
+  char* rootCoreBinChArr;
+  rootCoreBinChArr = getenv("ROOTCOREBIN");
+  string dataFilePath = string(rootCoreBinChArr) + "/data/histPlotter/";
+  
+  TFile *realEffFile = new TFile((dataFilePath + "MMrealEffs.root").c_str(),"READ");
+  TFile *fakeEffFile = new TFile((dataFilePath + "MMfakeEffs.root").c_str(),"READ");
+  
+  realEffHist = (TH1D*)realEffFile->Get("nominal");
+  fakeEffHist = (TH1D*)fakeEffFile->Get("nominal");
+    
 }
 
 vector<string> WprimeMergedSample::GetAllSupportedGlobalSampleTags(){
@@ -313,10 +328,80 @@ TH1D* WprimeMergedSample::GetMergedDataHist(string histName){
 }
 
 
+TH1D* WprimeMergedSample::GetMergedMultijetHist(string histName){
+  
+  /// DEBUG
+  cout << "Inside GetMergedMultijetHist!!!" << endl;
+  
+  const int nPtBins = 11;
+  double ptBinEdge[nPtBins] = {55,60,65,70,75,80,90,100,120,200,2000};
+  
+  TH1D *dataHist = GetMergedDataHist(histName);
+  
+  stringstream ss;
+    
+  TH1D* outHist = NULL;
+  
+  for (int iBin=0; iBin<nPtBins; iBin++){
+    ss.str(std::string());
+    if (iBin!=(nPtBins-1))
+      ss << ptBinEdge[iBin] << "-" << ptBinEdge[iBin+1];
+    else
+      ss << ptBinEdge[iBin];
+    
+    string realHistName = histName;
+    string fakeHistName = histName;
+    
+    replace(realHistName, "/hObjDump_", "_ptBin_" + ss.str() + "/hObjDump_");
+    replace(fakeHistName, "/hObjDump_", "_failIso_ptBin_" + ss.str() + "/hObjDump_");
+    
+    cout << "realHistName = " << realHistName << endl;    
+    cout << "fakeHistName = " << fakeHistName << endl;
+    
+    TH1D *realDataHist = GetMergedDataHist(realHistName);
+    TH1D *fakeDataHist = GetMergedDataHist(fakeHistName);
+    
+    if (realDataHist==NULL || fakeDataHist==NULL)
+      continue;
+    
+    realDataHist->Sumw2();
+    fakeDataHist->Sumw2();
+    double lepPt = ptBinEdge[iBin];
+    if (lepPt==ptBinEdge[nPtBins-1]) /// most right edge is outside of defined eff region.
+      lepPt = ptBinEdge[nPtBins-2];
+    double realEff = getRealEff(lepPt);
+    double fakeEff = getFakeEff(lepPt);
+    realDataHist->Scale( fakeEff*(1-realEff)/(realEff - fakeEff) );
+    fakeDataHist->Scale( fakeEff*realEff/(realEff - fakeEff) );
+    if (outHist==NULL){
+      outHist = (TH1D*)realDataHist->Clone((histName+"_multijet").c_str());
+      outHist->Add(fakeDataHist);
+    }
+    else{
+      outHist->Add(realDataHist); 
+      outHist->Add(fakeDataHist); 
+    }
+    
+    /// DEBUG
+    cout << "lepPt = " << lepPt << "; realEff = " << realEff << "; fakeEff = " << fakeEff << endl;
+    
+  }
+  
+  /// DEBUG
+  cout << "Bin val (pt=100) = " << outHist->GetBinContent(outHist->FindBin(100)) << endl;
+
+  return outHist;  
+  
+}
 
 
+double WprimeMergedSample::getRealEff(double lepPt){
+  return realEffHist->GetBinContent(realEffHist->FindBin(lepPt));
+}
 
-
+double WprimeMergedSample::getFakeEff(double lepPt){
+  return fakeEffHist->GetBinContent(fakeEffHist->FindBin(lepPt));
+}
 
 std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) {
     std::stringstream ss(s);
@@ -327,6 +412,13 @@ std::vector<std::string> &split(const std::string &s, char delim, std::vector<st
     return elems;
 }
 
+bool replace(std::string& str, const std::string& from, const std::string& to) {
+    size_t start_pos = str.find(from);
+    if(start_pos == std::string::npos)
+        return false;
+    str.replace(start_pos, from.length(), to);
+    return true;
+}
 
 std::vector<std::string> GetWords(const std::string &s, char delim) {
     std::vector<std::string> elems;

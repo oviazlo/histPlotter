@@ -17,9 +17,12 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>    // std::find
+#include <stdlib.h>     /* getenv */
 
 /// ROOT
 #include <TH1.h>
+#include <TH1D.h>
+#include <TFile.h>
 
 /// EventLoop/xAOD
 #include "SampleHandler/SampleHandler.h"
@@ -62,6 +65,8 @@ public:
     /// TODO think about implementation
     vector<string> GetAllSupportedSystematicsTags();
         
+    TH1D* GetMergedMultijetHist(string histName);
+    
     void PrintSamplePool();
      
 private:
@@ -83,6 +88,12 @@ private:
     /// if sample already included in the map - skip it
     void SortInputSH();
     
+    double getRealEff(double lepPt);
+    double getFakeEff(double lepPt);
+    
+    TH1D *realEffHist;
+    TH1D *fakeEffHist;
+    
     /// this is needed to distribute the algorithm to the workers
 //     ClassDef(WprimeMergedSample, 1);
 };
@@ -92,5 +103,7 @@ std::vector<std::string> &split(const std::string &s, char delim,
 
 
 std::vector<std::string> GetWords(const std::string &s, char delim=' ');
+
+bool replace(std::string& str, const std::string& from, const std::string& to);
 
 #endif
